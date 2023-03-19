@@ -12,7 +12,7 @@ using namespace std;
 #include <fpm/math.hpp>
 using namespace fpm;
 
-#include "mad_vector.h"
+#include "mad_things.h"
 using namespace mad;
 
 

@@ -167,6 +167,11 @@ namespace mad {
                 return sstream.str();
             }
     };
+
+    // it seeems these using declarations have to go after all the include directives
+    using fp = fixed_16_16;
+    using FixedVec2D = Vector2D<fp>;
+    using FixedVec3D = Vector3D<fp>;
 }
 
 #endif

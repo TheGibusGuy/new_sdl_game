@@ -16,11 +16,6 @@ using namespace mad;
 #include <fpm/math.hpp>
 using namespace fpm;
 
-// it seeems these using declarations have to go after all the include directives
-using fp = fixed_16_16;
-using FixedVec2D = Vector2D<fp>; 	
-using FixedVec3D = Vector3D<fp>;
-
 SDL_Renderer* gRenderer = NULL;
 SDL_Window* gWindow = NULL;
 SDL_Texture* gTextureList[16];
@@ -51,8 +46,6 @@ void snapshot(SDL_Event& e);
 bool init();
 
 void close();
-
-void testing();
 
 void ascii_signature();
 
@@ -91,8 +84,8 @@ void render() {
     case MAIN_MENU:
         break;
     case GAME:
-        for (size_t x = 0; x != gWorld.w; x++) {
-            for (size_t y = 0; y != gWorld.h; y++) {
+        for (uint16_t x = 0; x != gWorld.w; x++) {
+            for (uint16_t y = 0; y != gWorld.h; y++) {
                 static unsigned int SCALE = 32;
                 const SDL_Rect fillRect = { x * SCALE, y * SCALE, SCALE , SCALE };
                 if (gWorld.tiles[x + y * gWorld.w]!=-1) {
@@ -206,28 +199,6 @@ void close() {
     printf("Quit SDL\n");
 
     printf(":) Closing complete\n");
-}
-
-void testing() {
-    fp x{ 413 }, y{ 612 }, z{ 1025 };
-    FixedVec2D vec1{ x, y };
-    FixedVec3D vec2{ x, y, z };
-    printf("\n%s\n", vec1.str().c_str());
-    printf("\n%f\n", (double)vec1.mag());
-    printf("\n%s\n", vec1.norm().str().c_str());
-    printf("\n%s\n", vec2.str().c_str());
-    printf("\n%f\n", (double)vec2.mag());
-    printf("\n%s\n", vec2.norm().str().c_str());
-    if (load_world(gWorld, "maps/map01.txt")) {
-        int z = 0;
-        for (size_t i = 0; i != gWorld.tileNum; i++) {
-            printf("%i ", gWorld.tiles[i]);
-            z++;
-        }
-        cout << '\n' << z << '\n';
-    }
-    
-    //printf("\n%i\n", gWorld.tiles[0]);
 }
 
 void ascii_signature() {
