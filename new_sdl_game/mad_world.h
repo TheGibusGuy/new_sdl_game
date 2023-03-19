@@ -15,7 +15,6 @@ using namespace fpm;
 #include "mad_things.h"
 using namespace mad;
 
-
 namespace mad {
 	struct World {
 		uint16_t w = 0, h = 0;

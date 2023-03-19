@@ -7,6 +7,7 @@
 #include <sstream>
 using namespace std;
 
+#include "mad_things.h"
 #include "mad_vector.h"
 #include "mad_world.h"
 using namespace mad;
@@ -27,8 +28,6 @@ bool gQuit = false;
 
 uint64_t gCurrentTick = SDL_GetTicks64();
 uint64_t gNextSnapshot = gCurrentTick;
-
-const uint8_t SNAPSHOT_TIME = 15;
 
 enum GAME_STATES {
     MAIN_MENU,
@@ -51,6 +50,7 @@ void ascii_signature();
 
 int main(int argc, char* args[]) {
     ascii_signature();
+    printf("%f\n", (double)DELTA);
 
     gCurrentTick = SDL_GetTicks64();
     gNextSnapshot = gCurrentTick;
