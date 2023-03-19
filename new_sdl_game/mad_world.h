@@ -18,8 +18,8 @@ using namespace mad;
 
 namespace mad {
 	struct World {
-		uint16_t w = 0, h = 01;
-		size_t tile_num = 0;
+		uint16_t w = 0, h = 0;
+		size_t tileNum = 0;
 		int8_t* tiles = NULL;
 	};
 
@@ -31,7 +31,7 @@ namespace mad {
 		delete[] obj.tiles;
 		obj.tiles = NULL;
 		obj.w = 0, obj.h = 0;
-		obj.tile_num = 0;
+		obj.tileNum = 0;
 		printf("Destroyed world\n");
 	}
 
@@ -43,20 +43,19 @@ namespace mad {
 		ifstream file(path);
 
 		if (!file.fail()) {
-			printf("Opened file: %s\n", path);
-			printf("Data may or may not be invalid\n");
+			printf("Opened file: %s\nData may or may not be invalid\n", path);
 
 			string data;
 
 			getline(file, data); obj.w = stoi(data);
 			getline(file, data); obj.h = stoi(data);
-
 			printf("World is %u by %u tiles\n", obj.w, obj.h);
-			obj.tile_num = obj.w * obj.h;
-			printf("%llu bytes of tiles total\n", obj.tile_num);
 
-			obj.tiles = new int8_t[obj.tile_num];
-			for (size_t i = 0; i != obj.tile_num; i++) {
+			obj.tileNum = obj.w * obj.h;
+			printf("%llu bytes of tiles total\n", obj.tileNum);
+
+			obj.tiles = new int8_t[obj.tileNum];
+			for (size_t i = 0; i != obj.tileNum; i++) {
 				getline(file, data, ','); obj.tiles[i] = stoi(data);
 			}
 		}

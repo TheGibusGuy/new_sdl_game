@@ -7,7 +7,6 @@
 #include <sstream>
 using namespace std;
 
-#include "mad_render.h"
 #include "mad_vector.h"
 #include "mad_world.h"
 using namespace mad;
@@ -221,7 +220,7 @@ void testing() {
     printf("\n%s\n", vec2.norm().str().c_str());
     if (load_world(gWorld, "maps/map01.txt")) {
         int z = 0;
-        for (size_t i = 0; i != gWorld.tile_num; i++) {
+        for (size_t i = 0; i != gWorld.tileNum; i++) {
             printf("%i ", gWorld.tiles[i]);
             z++;
         }
