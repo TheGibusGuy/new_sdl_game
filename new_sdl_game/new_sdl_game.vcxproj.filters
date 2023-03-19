@@ -41,6 +41,9 @@
     <ClInclude Include="mad_world.h">
       <Filter>Header Files\mad</Filter>
     </ClInclude>
+    <ClInclude Include="mad_things.h">
+      <Filter>Header Files\mad</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="maps\map01.txt">

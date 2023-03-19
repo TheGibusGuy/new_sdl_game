@@ -164,6 +164,7 @@
     <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp" />
     <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp" />
     <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp" />
+    <ClInclude Include="mad_things.h" />
     <ClInclude Include="mad_world.h" />
   </ItemGroup>
   <ItemGroup>
