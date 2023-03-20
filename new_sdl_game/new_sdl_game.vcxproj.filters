@@ -32,15 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp">
-      <Filter>Header Files\fpm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp">
-      <Filter>Header Files\fpm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp">
-      <Filter>Header Files\fpm</Filter>
-    </ClInclude>
     <ClInclude Include="mad_world.h">
       <Filter>Header Files\mad</Filter>
     </ClInclude>
@@ -49,6 +40,18 @@
     </ClInclude>
     <ClInclude Include="mikey_signature.h">
       <Filter>Header Files\mikey</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_input.h">
+      <Filter>Header Files\mad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp">
+      <Filter>Header Files\fpm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp">
+      <Filter>Header Files\fpm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp">
+      <Filter>Header Files\fpm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

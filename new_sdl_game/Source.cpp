@@ -41,6 +41,9 @@ int8_t gState = MAIN_MENU;
 World gWorld;
 Thing gThings[THING_LIMIT];
 
+uint8_t gMenuSelection = 0;
+bool gPaused = false;
+
 void snapshot(SDL_Event& e);
 
 void render();

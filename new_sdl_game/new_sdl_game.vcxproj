@@ -161,9 +161,10 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp" />
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp" />
-    <ClInclude Include="..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp" />
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp" />
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp" />
+    <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp" />
+    <ClInclude Include="mad_input.h" />
     <ClInclude Include="mikey_signature.h" />
     <ClInclude Include="mad_things.h" />
     <ClInclude Include="mad_world.h" />
