@@ -10,9 +10,6 @@
 #include <fpm/ios.hpp>
 #include <fpm/math.hpp>
 
-using namespace std;
-using namespace fpm;
-
 namespace mad {
     template <typename T>
     class Vector2D {
@@ -80,8 +77,8 @@ namespace mad {
             }
 
             // a nicely formatted string
-            string str() {
-                stringstream sstream;
+            std::string str() {
+                std::stringstream sstream;
                 sstream << '(' << this->x << ',' << this->y << ')';
                 return sstream.str();
             }
@@ -161,15 +158,15 @@ namespace mad {
             }
 
             // a nicely formatted string
-            string str() {
-                stringstream sstream;
+            std::string str() {
+                std::stringstream sstream;
                 sstream << '(' << this->x << ',' << this->y << ',' << this->z << ')';
                 return sstream.str();
             }
     };
 
     // it seeems these using declarations have to go after all the include directives
-    using fp = fixed_16_16;
+    using fp = fpm::fixed_16_16;
     using FixedVec2D = Vector2D<fp>;
     using FixedVec3D = Vector3D<fp>;
 }

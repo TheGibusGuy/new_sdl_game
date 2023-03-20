@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <cstdint>
 #include <string>
-#include <sstream>
 using namespace std;
 
 #include "mad_things.h"
@@ -16,6 +15,9 @@ using namespace mad;
 #include <fpm/ios.hpp>
 #include <fpm/math.hpp>
 using namespace fpm;
+
+#include "mikey_signature.h"
+using namespace mikey;
 
 SDL_Renderer* gRenderer = NULL;
 SDL_Window* gWindow = NULL;
@@ -39,19 +41,16 @@ int8_t gState = MAIN_MENU;
 World gWorld;
 Thing gThings[THING_LIMIT];
 
-void render();
-
 void snapshot(SDL_Event& e);
+
+void render();
 
 bool init();
 
 void close();
 
-void ascii_signature();
-
 int main(int argc, char* args[]) {
     ascii_signature();
-    printf("%f\n", (double)DELTA);
 
     gCurrentTick = SDL_GetTicks64();
     gNextSnapshot = gCurrentTick;
@@ -200,34 +199,4 @@ void close() {
     printf("Quit SDL\n");
 
     printf(":) Closing complete\n");
-}
-
-void ascii_signature() {
-    stringstream signature;
-    signature << "oooooooooooooooooodddddddddddddddddddddooooooooo\n";
-    signature << "oooooooooooooooooodddddddddddooooooooooooooooooo\n";
-    signature << "oooooooooooooooooooooooolooooloOKOxooooooooooooo\n";
-    signature << "oooooooooooolclooooooooooll:;,;xNXoloooooooooooo\n";
-    signature << "ooooooooooool,',;;::;;,,''.....;ko'':loooooooooo\n";
-    signature << "ooooooooooodl,.................;kd'.';oooooooooo\n";
-    signature << "ooooooooooodl,',,'.............oNNd'':oooooooooo\n";
-    signature << "ooooooooooodl;,;;::;,.........'o00o:cooooooooooo\n";
-    signature << "ooooooooooooo:,::::::;;;;::::::::clooooooooooooo\n";
-    signature << "oooooooooooooc,;ccc:;;;;;;;;;;;;:loooooooooooooo\n";
-    signature << "ooooooooooool;,;:ccccc:::::::::::::coooooooooooo\n";
-    signature << "oooooooooo:;;'';:ccccccccccc:::::;'.,coooooooooo\n";
-    signature << "oooooooool;'..';:cccllccccccc::;,'..,:oooooooooo\n";
-    signature << "ooooooooooc,...',;;:::cccccc:,'...':oxxooooooooo\n";
-    signature << "oooooooooool:'....'''',,,,,'..'''';dOkdooooooooo\n";
-    signature << "oooooooool:;::;,,,'',,,,,,,'''..   'cllooooooooo\n";
-    signature << "ooooooooo;.    'c;:dl;lxxc;lc..;'.'.  'ldooooooo\n";
-    signature << "oooooooool'    :Okk0OxO00OO00OO0OOO; .:doooooooo\n";
-    signature << "ooooooooool'  .o0OOkkkO0000000Okkkk; ;oooooooooo\n";
-    signature << "oooooooooodl.  ;dc;;,,;codkkxl;,,...'ldooooooooo\n";
-    signature << "ooooooooooool' .;llc::lodxxkxdlc:'.,cooooooooooo\n";
-    signature << "oooooooooooooc. 'd00000xoodddkOdc:cooooooooooooo\n";
-    signature << "ooooooooooooo,   .,:clolllllccc:cooooooooooooooo\n";
-    signature << "ooooooooooool.              .:odoooooooooooooooo\n";
-    signature << "https://www.ascii-art-generator.org/\n";
-    printf("%s", signature.str().c_str());
 }

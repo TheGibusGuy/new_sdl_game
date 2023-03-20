@@ -1,21 +1,21 @@
 #ifndef MAD_THINGS
 #define MAD_THINGS
-	
+
+#include <cstdint>
 #include "mad_vector.h"
-using namespace mad;
 
 namespace mad {
-	const uint8_t SNAPSHOT_TIME = 15;
-	const fp DELTA{ (fp)SNAPSHOT_TIME / (fp)1000 };
-	const fp GRAVITY {200};
-	const uint8_t THING_LIMIT = 24;
+	const std::uint8_t SNAPSHOT_TIME = 15;
+	const std::uint8_t THING_LIMIT = 24;
+	const mad::fp DELTA{ (mad::fp)SNAPSHOT_TIME / (mad::fp)1000 };
+	const mad::fp GRAVITY {200};
 
 	class Thing {
-		FixedVec3D pos{ (fp)0,(fp)0,(fp)0 };
-		FixedVec3D prevPos{ (fp)0,(fp)0,(fp)0 };
-		FixedVec3D vel{ (fp)0,(fp)0,(fp)0 };
-		FixedVec3D dim{ (fp)0,(fp)0,(fp)0 };
-		fp dir{ 0 };
+		mad::FixedVec3D pos{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
+		mad::FixedVec3D prevPos{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
+		mad::FixedVec3D vel{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
+		mad::FixedVec3D dim{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
+		mad::fp dir{ 0 };
 	};
 }
 

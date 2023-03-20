@@ -19,6 +19,9 @@
     <Filter Include="Header Files\mad">
       <UniqueIdentifier>{fdb6c727-41e3-4c71-a9a4-63a3577f3054}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\mikey">
+      <UniqueIdentifier>{b35231cb-3181-4f9d-9d38-93c352a530fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="mad_things.h">
       <Filter>Header Files\mad</Filter>
+    </ClInclude>
+    <ClInclude Include="mikey_signature.h">
+      <Filter>Header Files\mikey</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
