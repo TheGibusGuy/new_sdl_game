@@ -8,8 +8,9 @@ namespace mad {
 	const uint8_t SNAPSHOT_TIME = 15;
 	const fp DELTA{ (fp)SNAPSHOT_TIME / (fp)1000 };
 	const fp GRAVITY {200};
+	const uint8_t THING_LIMIT = 24;
 
-	class thing {
+	class Thing {
 		FixedVec3D pos{ (fp)0,(fp)0,(fp)0 };
 		FixedVec3D prevPos{ (fp)0,(fp)0,(fp)0 };
 		FixedVec3D vel{ (fp)0,(fp)0,(fp)0 };

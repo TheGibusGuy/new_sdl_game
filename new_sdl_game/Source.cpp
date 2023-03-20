@@ -37,6 +37,7 @@ enum GAME_STATES {
 int8_t gState = MAIN_MENU;
 
 World gWorld;
+Thing gThings[THING_LIMIT];
 
 void render();
 
