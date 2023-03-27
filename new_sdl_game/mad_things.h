@@ -5,9 +5,9 @@
 #include "mad_vector.h"
 
 namespace mad {
-	const std::uint8_t SNAPSHOT_TIME = 15;
+	const std::uint8_t SNAPSHOT_TICKS = 15;
 	const std::uint8_t THING_LIMIT = 24;
-	const mad::fp DELTA{ (mad::fp)SNAPSHOT_TIME / (mad::fp)1000 };
+	const mad::fp DELTA{ (mad::fp)SNAPSHOT_TICKS / (mad::fp)1000 };
 	const mad::fp GRAVITY {200};
 
 	enum THING_TYPES {

@@ -79,7 +79,6 @@ void delete_all_things() {
 }
 
 // overloaded zone
-
 void snapshot(SDL_Event& e);
 void render();
 bool init();
@@ -101,7 +100,7 @@ int main(int argc, char* args[]) {
             gCurrentTick = SDL_GetTicks64();
 
             if (gCurrentTick >= gNextSnapshot) {
-                while (gCurrentTick >= gNextSnapshot) gNextSnapshot += SNAPSHOT_TIME;
+                while (gCurrentTick >= gNextSnapshot) gNextSnapshot += SNAPSHOT_TICKS;
                 snapshot(e);
             }
             
@@ -140,10 +139,37 @@ void render() {
             }
         }
         // render everything
-        SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 255);
         for (size_t i = 0; i != THING_LIMIT; i++) {
             if (gThings[i] != nullptr) {
-                SDL_RenderDrawPoint(gRenderer,((int32_t)(gThings[i]->pos.x*fp(SCALE))), (int32_t)(gThings[i]->pos.y * fp(SCALE)));
+                SDL_Rect objRect;
+
+                SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
+                const int32_t posX = (int32_t)(gThings[i]->pos.x * fp(SCALE)) - (SCALE / 4);
+                const int32_t posY = (int32_t)(gThings[i]->pos.y * fp(SCALE)) - (SCALE / 4);
+                objRect = { posX,posY, SCALE / 2 , SCALE / 2 };
+                SDL_RenderFillRect(gRenderer, &objRect);
+
+                SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
+                const int32_t prevPosX = (int32_t)(gThings[i]->prevPos.x * fp(SCALE)) - (SCALE / 4);
+                const int32_t prevPosY = (int32_t)(gThings[i]->prevPos.y * fp(SCALE)) - (SCALE / 4);
+                objRect = { prevPosX,prevPosY, SCALE / 2 , SCALE / 2 };
+                SDL_RenderFillRect(gRenderer, &objRect);
+
+
+                // i think theres a more efficient way to do this calculating the sub time
+                // but this is more intuitive to me
+                uint64_t subSnapshotTick = SNAPSHOT_TICKS - (gNextSnapshot - gCurrentTick);
+                fp lerp{ (fp)subSnapshotTick/(fp)SNAPSHOT_TICKS};
+
+                FixedVec3D subVec = gThings[i]->pos - gThings[i]->prevPos;
+                subVec = subVec.scale(lerp);
+                FixedVec3D interpPos = gThings[i]->prevPos + subVec;
+    
+                SDL_SetRenderDrawColor(gRenderer, 0, 255, 0, 255);
+                const int32_t interpX = (int32_t)(interpPos.x * fp(SCALE)) - (SCALE / 4);
+                const int32_t interpY = (int32_t)(interpPos.y * fp(SCALE)) - (SCALE / 4);
+                objRect = { interpX,interpY, SCALE / 2 , SCALE / 2 };
+                SDL_RenderFillRect(gRenderer, &objRect);
             }
         }
         break;
@@ -207,9 +233,6 @@ void snapshot(SDL_Event &e) {
             if (gThings[i] != nullptr) {
                 switch (gThings[i]->type) {
                     case PLAYER:
-                        gThings[i]->vel.x = (fp)0;
-                        gThings[i]->vel.y = (fp)0;
-                        gThings[i]->vel.z = (fp)0;
                         if (currentKeyStates[SDL_SCANCODE_D]) {
                             wishDir.x +=1 ;
                         }
@@ -222,16 +245,29 @@ void snapshot(SDL_Event &e) {
                         if (currentKeyStates[SDL_SCANCODE_S]) {
                             wishDir.y += 1;
                         }
+
+                        gThings[i]->vel -= gThings[i]->vel.scale((fp)10 * DELTA);
                         if (!wishDir.is_zero()) {
                             wishDir = wishDir.norm();
-                            gThings[i]->vel += wishDir.scale((fp)400 * DELTA);
+
+                            gThings[i]->vel += wishDir.scale((fp)100 * DELTA);
+                            if (gThings[i]->vel.mag() > fp(10)) {
+                                gThings[i]->vel = gThings[i]->vel.norm().scale((fp)10);
+                            }
                         }
+                        else {
+                            if (gThings[i]->vel.mag() <= fp(1)) {
+                                gThings[i]->vel = { (fp)0 ,(fp)0 ,(fp)0 };
+                            }
+                        }
+                        
                         gThings[i]->move();
                         break;
                     default:
                         break;
                 }
                 cout << gThings[i]->pos.str() << '\n';
+                cout << gThings[i]->vel.mag() << '\n';
             }
         }
         break;
