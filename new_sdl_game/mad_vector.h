@@ -11,6 +11,9 @@
 #include <fpm/math.hpp>
 
 namespace mad {
+    // it seeems this using declaration has to go after all the include directives
+    using fp = fpm::fixed_16_16;
+
     template <typename T>
     class Vector2D {
         public:
@@ -56,6 +59,11 @@ namespace mad {
             void operator /= (const Vector2D& obj) {
                 this->x /= obj.x;
                 this->y /= obj.y;
+            }
+
+            // scaling
+            Vector2D scale(fp scalar) {
+                return { this->x * scalar, this->y * scalar};
             }
 
             // magnitude
@@ -137,6 +145,11 @@ namespace mad {
                 this->z /= obj.z;
             }
 
+            // scaling
+            Vector3D scale(fp scalar) {
+                return { this->x * scalar, this->y * scalar, this->z * scalar };
+            }
+
             // magnitude
             T mag() {
                 T thetaA{ fpm::atan(this->y / this->x) };
@@ -166,7 +179,6 @@ namespace mad {
     };
 
     // it seeems these using declarations have to go after all the include directives
-    using fp = fpm::fixed_16_16;
     using FixedVec2D = Vector2D<fp>;
     using FixedVec3D = Vector3D<fp>;
 }

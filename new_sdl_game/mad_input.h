@@ -8,11 +8,10 @@ namespace mad {
 	class Action {
 		SDL_Keycode bind;
 		SDL_Keycode altBind;
-		uint8_t flags;
+		std::uint8_t flags;
 		// first bit checks if it's binded
-		// second bit checks if the alt si binded
+		// second bit checks if the alt is binded
 		// third flag check if the key is being held
-
 	};
 }
 

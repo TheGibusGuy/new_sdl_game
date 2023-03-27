@@ -19,8 +19,8 @@ using namespace fpm;
 #include "mikey_signature.h"
 using namespace mikey;
 
-SDL_Renderer* gRenderer = NULL;
-SDL_Window* gWindow = NULL;
+SDL_Renderer* gRenderer = nullptr;
+SDL_Window* gWindow = nullptr;
 SDL_Texture* gTextureList[16];
 
 uint16_t gWindowWidth = 640;
@@ -36,20 +36,53 @@ enum GAME_STATES {
     GAME,
     RESULTS
 };
+
 int8_t gState = MAIN_MENU;
 
-World gWorld;
-Thing gThings[THING_LIMIT];
-
 uint8_t gMenuSelection = 0;
-bool gPaused = false;
+bool gMenuOpen = false;
+
+World gWorld;
+Thing* gThings[THING_LIMIT];
+
+// this a wrapper function for the Thing classes' constructor
+// it checks for free space before adding an item
+int16_t create_thing(int16_t t, FixedVec3D spawnPos) {
+    printf("Creating thing\n");
+    for (uint16_t i = 0; i != THING_LIMIT; i++) {
+        if (gThings[i] == nullptr) {
+            gThings[i] = new Thing(t, spawnPos);
+            return i;
+        }
+    }
+    printf("Could not create thing! No space!");
+    return -1;
+}
+
+void delete_thing(size_t i) {
+    if (gThings[i] == nullptr) {
+        printf("Nothing here to delete - ");
+    }
+    else {
+        printf("Deleting thing - ");
+        delete gThings[i];
+    }
+    printf("Setting pointer to nullptr\n");
+    gThings[i] = nullptr;
+}
+
+void delete_all_things() {
+    for (size_t i = 0; i != THING_LIMIT; i++) {
+        delete_thing(i);
+    }
+    printf("All things deleted and pointers set to nullptr\n");
+}
+
+// overloaded zone
 
 void snapshot(SDL_Event& e);
-
 void render();
-
 bool init();
-
 void close();
 
 int main(int argc, char* args[]) {
@@ -87,15 +120,21 @@ void render() {
     case MAIN_MENU:
         break;
     case GAME:
+        // i could use a callback function for this #1
         for (uint16_t x = 0; x != gWorld.w; x++) {
             for (uint16_t y = 0; y != gWorld.h; y++) {
-                static unsigned int SCALE = 32;
+                static int SCALE = 32;
                 const SDL_Rect fillRect = { x * SCALE, y * SCALE, SCALE , SCALE };
-                if (gWorld.tiles[x + y * gWorld.w]!=-1) {
-                    SDL_SetRenderDrawColor(gRenderer, 127, 35, 76, 255);
-                }
-                else {
-                    SDL_SetRenderDrawColor(gRenderer, 42, 64, 89, 255);
+                switch (gWorld.tiles[x + (y * gWorld.w)]) {
+                    case -1:
+                        SDL_SetRenderDrawColor(gRenderer, 127, 35, 76, 255);
+                        break;
+                    case 69:
+                        SDL_SetRenderDrawColor(gRenderer, 69, 69, 69, 69);
+                        break;
+                    default:
+                        SDL_SetRenderDrawColor(gRenderer, 42, 64, 89, 255);
+                        break;
                 }
                 SDL_RenderFillRect(gRenderer, &fillRect);
             }
@@ -113,6 +152,32 @@ void render() {
     SDL_RenderPresent(gRenderer);
 }
 
+void set_gamestate(uint8_t  s) {
+    printf("Changing Gamestate\n");
+    gState = s;
+}
+
+void start_game() {
+    set_gamestate(GAME);
+    delete_all_things();
+    load_world(gWorld, "maps/map01.txt");
+    // i could use a callback function for this #1
+    for (uint16_t x = 0; x != gWorld.w; x++) {
+        for (uint16_t y = 0; y != gWorld.h; y++) {
+            switch (gWorld.tiles[x + (y * gWorld.w)]) {
+            case -1:
+                break;
+            case 69:
+                create_thing(PLAYER, { (fp)x,(fp)y,(fp)0 });
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    // i could use a callback function for this #2
+}
+
 void snapshot(SDL_Event &e) {
     while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
@@ -120,19 +185,39 @@ void snapshot(SDL_Event &e) {
         }
     }
 
-    const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+    const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
 
     switch (gState) {
     case MAIN_MENU:
         if (currentKeyStates[SDL_SCANCODE_SPACE]) {
-            printf("Changing Gamestate\n");
-            load_world(gWorld, "maps/map01.txt");
-            gState = GAME;
+            start_game();
         }
         break;
     case GAME:
-        if (currentKeyStates[SDL_SCANCODE_A]) {
-            printf("%llu\n", gCurrentTick);
+        // simulate everything
+        for (size_t i = 0; i != THING_LIMIT; i++) {
+            if (gThings[i] != nullptr) {
+                switch (gThings[i]->type) {
+                    case PLAYER:
+                        gThings[i]->vel = {(fp)0, (fp)0, (fp)0};
+                        if (currentKeyStates[SDL_SCANCODE_D]) {
+                            gThings[i]->vel.x += (fp)400 * DELTA;
+                        }
+                        if (currentKeyStates[SDL_SCANCODE_A]) {
+                            gThings[i]->vel.x -= (fp)400 * DELTA;
+                        }
+                        if (currentKeyStates[SDL_SCANCODE_W]) {
+                            gThings[i]->vel.y -= (fp)400 * DELTA;
+                        }
+                        if (currentKeyStates[SDL_SCANCODE_S]) {
+                            gThings[i]->vel.y += (fp)400 * DELTA;
+                        }
+                        gThings[i]->move();
+                    default:
+                        break;
+                }
+                cout << gThings[i]->pos.str() << '\n';
+            }
         }
         break;
     case RESULTS:
@@ -155,7 +240,7 @@ bool init() {
     }
 
     gWindow = SDL_CreateWindow("MADCOM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, gWindowWidth, gWindowHeight, SDL_WINDOW_SHOWN);
-    if (gWindow == NULL) {
+    if (gWindow == nullptr) {
         printf("Failed to create window: %s\n", SDL_GetError());
         success = false;
     }
@@ -164,7 +249,7 @@ bool init() {
     }
 
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (gWindow == NULL) {
+    if (gWindow == nullptr) {
         printf("Failed to create renderer: %s\n", SDL_GetError());
         success = false;
     }
@@ -188,13 +273,16 @@ void close() {
     // already has it's own message so theres no printf here
     destroy_world(gWorld);
 
+    // same ^
+    delete_all_things();
+
     // free everything from memory
     SDL_DestroyRenderer(gRenderer);
-    gRenderer = NULL;
+    gRenderer = nullptr;
     printf("Renderer destroyed\n");
 
     SDL_DestroyWindow(gWindow);
-    gWindow = NULL;
+    gWindow = nullptr;
     printf("Window destroyed\n");
 
     // then quit SDL's subsystems

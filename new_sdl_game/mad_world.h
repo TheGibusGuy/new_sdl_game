@@ -14,16 +14,16 @@ namespace mad {
 	struct World {
 		std::uint16_t w = 0, h = 0;
 		std::size_t tileNum = 0;
-		std::int8_t* tiles = NULL;
+		std::int8_t* tiles = nullptr;
 	};
 
 	void destroy_world(World& obj) {
-		if (obj.tiles == NULL) {
+		if (obj.tiles == nullptr) {
 			std::printf("Destroy aborted, no world loaded\n");
 			return;
 		}
 		delete[] obj.tiles;
-		obj.tiles = NULL;
+		obj.tiles = nullptr;
 		obj.w = 0, obj.h = 0;
 		obj.tileNum = 0;
 		std::printf("Destroyed world\n");
@@ -57,7 +57,7 @@ namespace mad {
 			std::printf("Failed to open file: %s\n", path);
 		}
 		
-		if (obj.tiles == NULL) {
+		if (obj.tiles == nullptr) {
 			std::printf(":( Failed to load world\n");
 			return false;
 		}
