@@ -33,9 +33,6 @@ namespace mad {
 						this->dim = { (mad::fp)1,(mad::fp)1,(mad::fp)1 };
 						this->pos = spawnPos;
 						this->prevPos = spawnPos;
-						printf("%s\n", this->dim.str().c_str());
-						printf("%s\n", this->pos.str().c_str());
-						printf("%s\n", this->prevPos.str().c_str());
 						break;
 					default:
 						printf("Cannot init, thing has invalid type: %i\n", type);

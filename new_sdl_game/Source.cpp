@@ -139,6 +139,13 @@ void render() {
                 SDL_RenderFillRect(gRenderer, &fillRect);
             }
         }
+        // render everything
+        SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
+        for (size_t i = 0; i != THING_LIMIT; i++) {
+            if (gThings[i] != nullptr) {
+                SDL_RenderDrawPoint(gRenderer,((int32_t)(gThings[i]->pos.x*fp(16))), (int32_t)(gThings[i]->pos.y * fp(16)));
+            }
+        }
         break;
     case RESULTS:
         break;
@@ -152,7 +159,7 @@ void render() {
     SDL_RenderPresent(gRenderer);
 }
 
-void set_gamestate(uint8_t  s) {
+void set_gamestate(uint8_t s) {
     printf("Changing Gamestate\n");
     gState = s;
 }
@@ -186,6 +193,7 @@ void snapshot(SDL_Event &e) {
     }
 
     const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
+    FixedVec3D wishDir{ (fp)0, (fp)0, (fp)0 };
 
     switch (gState) {
     case MAIN_MENU:
@@ -199,20 +207,27 @@ void snapshot(SDL_Event &e) {
             if (gThings[i] != nullptr) {
                 switch (gThings[i]->type) {
                     case PLAYER:
-                        gThings[i]->vel = {(fp)0, (fp)0, (fp)0};
+                        gThings[i]->vel.x = (fp)0;
+                        gThings[i]->vel.y = (fp)0;
+                        gThings[i]->vel.z = (fp)0;
                         if (currentKeyStates[SDL_SCANCODE_D]) {
-                            gThings[i]->vel.x += (fp)400 * DELTA;
+                            wishDir.x +=1 ;
                         }
                         if (currentKeyStates[SDL_SCANCODE_A]) {
-                            gThings[i]->vel.x -= (fp)400 * DELTA;
+                            wishDir.x -= 1;
                         }
                         if (currentKeyStates[SDL_SCANCODE_W]) {
-                            gThings[i]->vel.y -= (fp)400 * DELTA;
+                            wishDir.y -= 1;
                         }
                         if (currentKeyStates[SDL_SCANCODE_S]) {
-                            gThings[i]->vel.y += (fp)400 * DELTA;
+                            wishDir.y += 1;
+                        }
+                        if (!wishDir.is_zero()) {
+                            wishDir = wishDir.norm();
+                            gThings[i]->vel += wishDir.scale((fp)400 * DELTA);
                         }
                         gThings[i]->move();
+                        break;
                     default:
                         break;
                 }

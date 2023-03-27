@@ -15,84 +15,6 @@ namespace mad {
     using fp = fpm::fixed_16_16;
 
     template <typename T>
-    class Vector2D {
-        public:
-            T x;
-            T y;
-
-            Vector2D(T X, T Y) {
-                x = X;
-                y = Y;
-            }
-
-            // addition
-            Vector2D operator + (const Vector2D& obj) {
-                return { this->x + obj.x, this->y + obj.y };
-            }
-            void operator += (const Vector2D& obj) {
-                this->x += obj.x;
-                this->y += obj.y;
-            }
-
-            // subtraction
-            Vector2D operator - (const Vector2D& obj) {
-                return { this->x - obj.x, this->y - obj.y };
-            }
-            void operator -= (const Vector2D& obj) {
-                this->x -= obj.x;
-                this->y -= obj.y;
-            }
-
-            // multiplication
-            Vector2D operator * (const Vector2D& obj) {
-                return { this->x * obj.x, this->y * obj.y };
-            }
-            void operator *= (const Vector2D& obj) {
-                this->x *= obj.x;
-                this->y *= obj.y;
-            }
-
-            // division
-            Vector2D operator / (const Vector2D& obj) {
-                return { this->x / obj.x, this->y / obj.y };
-            }
-            void operator /= (const Vector2D& obj) {
-                this->x /= obj.x;
-                this->y /= obj.y;
-            }
-
-            // scaling
-            Vector2D scale(fp scalar) {
-                return { this->x * scalar, this->y * scalar};
-            }
-
-            // magnitude
-            T mag() {
-                T thetaA{ fpm::atan(this->y / this->x) };
-                T lengthA{ (this->x * fpm::cos(thetaA)) + (this->y * fpm::sin(thetaA)) };
-;               return fpm::abs(lengthA);
-            }
-
-            // normalize
-            Vector2D norm() {
-                T magnitude{ this->mag() };
-                return { this->x / magnitude, this->y / magnitude };
-            }
-
-            // dot product
-            T dot(const Vector2D& obj) {
-                return (this->x * obj.x) + (this->y * obj.y);
-            }
-
-            // a nicely formatted string
-            std::string str() {
-                std::stringstream sstream;
-                sstream << '(' << this->x << ',' << this->y << ')';
-                return sstream.str();
-            }
-    };
-
-    template <typename T>
     class Vector3D {
         public:
             T x;
@@ -150,13 +72,35 @@ namespace mad {
                 return { this->x * scalar, this->y * scalar, this->z * scalar };
             }
 
+            // check if zero
+            bool is_zero() {
+                if ((this->x == (fp)0) && (this->y == (fp)0) && (this->z == (fp)0)) return true;
+                return false;
+            }
+
             // magnitude
             T mag() {
-                T thetaA{ fpm::atan(this->y / this->x) };
-                T lengthA{ (this->x * fpm::cos(thetaA)) + (this->y * fpm::sin(thetaA)) };
-                T thetaB{ fpm::atan( this->z / lengthA) };
-                T lengthB{ (lengthA * fpm::cos(thetaB)) + (this->z * fpm::sin(thetaB)) };
-                return fpm::abs(lengthB);
+                // is important that i put the abs in the right spots here
+                // this was breaking earlier since I didn't
+                T thetaA;
+                if (this->x == fp(0)) {
+                    thetaA = T::half_pi();
+                }
+                else {
+                    thetaA = fpm::atan(this->y / this->x);
+                }
+                T lengthA{ fpm::abs((this->x * fpm::cos(thetaA))) + fpm::abs((this->y * fpm::sin(thetaA))) };
+
+                T thetaB;
+                if (lengthA == fp(0)) {
+                    thetaB = T::half_pi();
+                }
+                else {
+                    thetaB = fpm::atan(this->z / lengthA);
+                };
+                T lengthB{ fpm::abs((lengthA * fpm::cos(thetaB))) + fpm::abs((this->z * fpm::sin(thetaB))) };
+
+                return lengthB;
             }
 
             // normalize
@@ -179,7 +123,6 @@ namespace mad {
     };
 
     // it seeems these using declarations have to go after all the include directives
-    using FixedVec2D = Vector2D<fp>;
     using FixedVec3D = Vector3D<fp>;
 }
 
