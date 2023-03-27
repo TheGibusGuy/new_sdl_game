@@ -142,17 +142,19 @@ void render() {
         for (size_t i = 0; i != THING_LIMIT; i++) {
             if (gThings[i] != nullptr) {
                 SDL_Rect objRect;
+                const static int THING_SCALE = SCALE / 4;
+                const static int HALF_THING_WIDTH = THING_SCALE / 2;
 
                 SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
-                const int32_t posX = (int32_t)(gThings[i]->pos.x * fp(SCALE)) - (SCALE / 4);
-                const int32_t posY = (int32_t)(gThings[i]->pos.y * fp(SCALE)) - (SCALE / 4);
-                objRect = { posX,posY, SCALE / 2 , SCALE / 2 };
+                const int32_t posX = (int32_t)(gThings[i]->pos.x * fp(SCALE)) - HALF_THING_WIDTH;
+                const int32_t posY = (int32_t)(gThings[i]->pos.y * fp(SCALE)) - HALF_THING_WIDTH;
+                objRect = { posX,posY, THING_SCALE , THING_SCALE };
                 SDL_RenderFillRect(gRenderer, &objRect);
 
                 SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
-                const int32_t prevPosX = (int32_t)(gThings[i]->prevPos.x * fp(SCALE)) - (SCALE / 4);
-                const int32_t prevPosY = (int32_t)(gThings[i]->prevPos.y * fp(SCALE)) - (SCALE / 4);
-                objRect = { prevPosX,prevPosY, SCALE / 2 , SCALE / 2 };
+                const int32_t prevPosX = (int32_t)(gThings[i]->prevPos.x * fp(SCALE)) - HALF_THING_WIDTH;
+                const int32_t prevPosY = (int32_t)(gThings[i]->prevPos.y * fp(SCALE)) - HALF_THING_WIDTH;
+                objRect = { prevPosX,prevPosY, THING_SCALE , THING_SCALE };
                 SDL_RenderFillRect(gRenderer, &objRect);
 
 
@@ -166,9 +168,9 @@ void render() {
                 FixedVec3D interpPos = gThings[i]->prevPos + subVec;
     
                 SDL_SetRenderDrawColor(gRenderer, 0, 255, 0, 255);
-                const int32_t interpX = (int32_t)(interpPos.x * fp(SCALE)) - (SCALE / 4);
-                const int32_t interpY = (int32_t)(interpPos.y * fp(SCALE)) - (SCALE / 4);
-                objRect = { interpX,interpY, SCALE / 2 , SCALE / 2 };
+                const int32_t interpX = (int32_t)(interpPos.x * fp(SCALE)) - HALF_THING_WIDTH;
+                const int32_t interpY = (int32_t)(interpPos.y * fp(SCALE)) - HALF_THING_WIDTH;
+                objRect = { interpX,interpY, THING_SCALE , THING_SCALE };
                 SDL_RenderFillRect(gRenderer, &objRect);
             }
         }
@@ -201,7 +203,7 @@ void start_game() {
             case -1:
                 break;
             case 69:
-                create_thing(PLAYER, { (fp)x,(fp)y,(fp)0 });
+                create_thing(PLAYER, { (fp)x + (fp)0.5,(fp)y + (fp)0.5,(fp)0});
                 break;
             default:
                 break;
@@ -220,6 +222,10 @@ void snapshot(SDL_Event &e) {
 
     const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
     FixedVec3D wishDir{ (fp)0, (fp)0, (fp)0 };
+    const static fp MAX_SPEED{ 4 };
+    const static fp MAX_ACCEL{ (fp)10 * MAX_SPEED };
+    const static fp FRICTION { 8 };
+    const static fp STOP_SPEED{ 0.5 };
 
     switch (gState) {
     case MAIN_MENU:
@@ -246,17 +252,25 @@ void snapshot(SDL_Event &e) {
                             wishDir.y += 1;
                         }
 
-                        gThings[i]->vel -= gThings[i]->vel.scale((fp)10 * DELTA);
+                        gThings[i]->vel -= gThings[i]->vel.scale(FRICTION * DELTA);
                         if (!wishDir.is_zero()) {
                             wishDir = wishDir.norm();
 
-                            gThings[i]->vel += wishDir.scale((fp)100 * DELTA);
-                            if (gThings[i]->vel.mag() > fp(10)) {
-                                gThings[i]->vel = gThings[i]->vel.norm().scale((fp)10);
+                            // I'm assuming a dot product was done back in the day instead
+                            // of a magnitude check since it would be faster
+                            // to squeeze out some extra performance
+                            // even with my optimizations using trig functions
+                            // the dot product takes far less calculations here
+                            fp currentSpeed = gThings[i]->vel.dot(wishDir);
+                            fp addSpeed = MAX_ACCEL * DELTA;
+                            if (addSpeed > MAX_SPEED - currentSpeed) {
+                                addSpeed = MAX_SPEED - currentSpeed;
                             }
+                            gThings[i]->vel += wishDir.scale(addSpeed);
                         }
                         else {
-                            if (gThings[i]->vel.mag() <= fp(1)) {
+                            // ill need to fix this later when accounting for vertical movement
+                            if (gThings[i]->vel.mag() <= STOP_SPEED) {
                                 gThings[i]->vel = { (fp)0 ,(fp)0 ,(fp)0 };
                             }
                         }
@@ -266,8 +280,8 @@ void snapshot(SDL_Event &e) {
                     default:
                         break;
                 }
-                cout << gThings[i]->pos.str() << '\n';
-                cout << gThings[i]->vel.mag() << '\n';
+                // std::cout << gThings[i]->pos.str() << '\n';
+                std::cout << gThings[i]->vel.mag() << '\n';
             }
         }
         break;
