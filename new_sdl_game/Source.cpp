@@ -114,6 +114,7 @@ int main(int argc, char* args[]) {
 }
 
 void render() {
+    const static int SCALE = 32;
     SDL_SetRenderDrawColor(gRenderer, 191, 191, 191, 255);
     SDL_RenderClear(gRenderer);
     switch (gState) {
@@ -123,7 +124,6 @@ void render() {
         // i could use a callback function for this #1
         for (uint16_t x = 0; x != gWorld.w; x++) {
             for (uint16_t y = 0; y != gWorld.h; y++) {
-                static int SCALE = 32;
                 const SDL_Rect fillRect = { x * SCALE, y * SCALE, SCALE , SCALE };
                 switch (gWorld.tiles[x + (y * gWorld.w)]) {
                     case -1:
@@ -140,10 +140,10 @@ void render() {
             }
         }
         // render everything
-        SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(gRenderer, 255, 0, 255, 255);
         for (size_t i = 0; i != THING_LIMIT; i++) {
             if (gThings[i] != nullptr) {
-                SDL_RenderDrawPoint(gRenderer,((int32_t)(gThings[i]->pos.x*fp(16))), (int32_t)(gThings[i]->pos.y * fp(16)));
+                SDL_RenderDrawPoint(gRenderer,((int32_t)(gThings[i]->pos.x*fp(SCALE))), (int32_t)(gThings[i]->pos.y * fp(SCALE)));
             }
         }
         break;
