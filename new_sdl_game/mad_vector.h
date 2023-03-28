@@ -28,43 +28,47 @@ namespace mad {
             }
 
             // addition
-            Vector3D operator + (const Vector3D& obj) {
+            inline Vector3D operator + (const Vector3D& obj) {
                 return { this->x + obj.x, this->y + obj.y, this->z + obj.z};
             }
-            void operator += (const Vector3D& obj) {
+            inline Vector3D& operator += (const Vector3D& obj) {
                 this->x += obj.x;
                 this->y += obj.y;
                 this->z += obj.z;
+                return *this;
             }
 
             // subtraction
-            Vector3D operator - (const Vector3D& obj) {
+            inline Vector3D operator - (const Vector3D& obj) {
                 return { this->x - obj.x, this->y - obj.y, this->z - obj.z };
             }
-            void operator -= (const Vector3D& obj) {
+            inline Vector3D& operator -= (const Vector3D& obj) {
                 this->x -= obj.x;
                 this->y -= obj.y;
                 this->z -= obj.z;
+                return *this;
             }
 
             // multiplication
-            Vector3D operator * (const Vector3D & obj) {
+            inline Vector3D operator * (const Vector3D & obj) {
                 return { this->x * obj.x, this->y * obj.y, this->z * obj.z };
             }
-            void operator *= (const Vector3D& obj) {
+            inline Vector3D& operator *= (const Vector3D& obj) {
                 this->x *= obj.x;
                 this->y *= obj.y;
                 this->z *= obj.z;
+                return *this;
             }
 
             // division
-            Vector3D operator / (const Vector3D& obj) {
+            inline Vector3D operator / (const Vector3D& obj) {
                 return { this->x / obj.x, this->y / obj.y, this->z / obj.z };
             }
-            void operator /= (const Vector3D& obj) {
+            inline Vector3D& operator /= (const Vector3D& obj) {
                 this->x /= obj.x;
                 this->y /= obj.y;
                 this->z /= obj.z;
+                return *this;
             }
 
             // scaling

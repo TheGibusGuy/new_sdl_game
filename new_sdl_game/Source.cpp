@@ -281,7 +281,7 @@ void snapshot(SDL_Event &e) {
                         break;
                 }
                 // std::cout << gThings[i]->pos.str() << '\n';
-                std::cout << gThings[i]->vel.mag() << '\n';
+                // std::cout << gThings[i]->vel.mag() << '\n';
             }
         }
         break;
