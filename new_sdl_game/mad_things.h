@@ -18,7 +18,7 @@ namespace mad {
 	class Thing {
 		public:
 			mad::FixedVec3D pos{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
-			mad::FixedVec3D prevPos{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
+			mad::FixedVec3D prev_pos{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
 			mad::FixedVec3D vel{ (mad::fp)0,(mad::fp)0,(mad::fp)0 };
 			mad::fp dir{ 0 };
 
@@ -32,7 +32,7 @@ namespace mad {
 						printf("Setting values for player thing\n");
 						this->dim = { (mad::fp)1,(mad::fp)1,(mad::fp)1 };
 						this->pos = spawnPos;
-						this->prevPos = spawnPos;
+						this->prev_pos = spawnPos;
 						break;
 					default:
 						printf("Cannot init, thing has invalid type: %i\n", type);
@@ -41,7 +41,7 @@ namespace mad {
 			}
 			
 			void move() {
-				this->prevPos = this->pos;
+				this->prev_pos = this->pos;
 				this->pos += this->vel.scale(DELTA);
 			}
 	};
