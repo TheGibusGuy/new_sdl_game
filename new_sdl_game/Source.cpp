@@ -19,17 +19,17 @@ using namespace fpm;
 #include "mikey_signature.h"
 using namespace mikey;
 
-SDL_Renderer* gRenderer = nullptr;
-SDL_Window* gWindow = nullptr;
-SDL_Texture* gTextureList[16];
+SDL_Renderer* g_renderer = nullptr;
+SDL_Window* g_window = nullptr;
+SDL_Texture* g_textureList[16];
 
-uint16_t gWindowWidth = 640;
-uint16_t gWindowHeight = 480;
+uint16_t g_windowWidth = 640;
+uint16_t g_windowHeight = 480;
 
 bool gQuit = false;
 
-uint64_t gCurrentTick = SDL_GetTicks64();
-uint64_t gNextSnapshot = gCurrentTick;
+uint64_t g_current_tick = 0;
+uint64_t g_next_snapshot = g_current_tick;
 
 enum GAME_STATES {
     MAIN_MENU,
@@ -39,19 +39,19 @@ enum GAME_STATES {
 
 int8_t gState = MAIN_MENU;
 
-uint8_t gMenuSelection = 0;
-bool gMenuOpen = false;
+uint8_t g_menu_selection = 0;
+bool g_menuOpen = false;
 
-World gWorld;
-Thing* gThings[THING_LIMIT];
+World g_world;
+Thing* g_things[THING_LIMIT];
 
 // this a wrapper function for the Thing classes' constructor
 // it checks for free space before adding an item
-int16_t create_thing(int16_t t, FixedVec3D spawnPos) {
+int16_t create_thing(int16_t t, FixedVec3D spawn_pos) {
     printf("Creating thing\n");
     for (uint16_t i = 0; i != THING_LIMIT; i++) {
-        if (gThings[i] == nullptr) {
-            gThings[i] = new Thing(t, spawnPos);
+        if (g_things[i] == nullptr) {
+            g_things[i] = new Thing(t, spawn_pos);
             return i;
         }
     }
@@ -60,15 +60,15 @@ int16_t create_thing(int16_t t, FixedVec3D spawnPos) {
 }
 
 void delete_thing(size_t i) {
-    if (gThings[i] == nullptr) {
+    if (g_things[i] == nullptr) {
         printf("Nothing here to delete - ");
     }
     else {
         printf("Deleting thing - ");
-        delete gThings[i];
+        delete g_things[i];
     }
     printf("Setting pointer to nullptr\n");
-    gThings[i] = nullptr;
+    g_things[i] = nullptr;
 }
 
 void delete_all_things() {
@@ -87,20 +87,16 @@ void close();
 int main(int argc, char* args[]) {
     ascii_signature();
 
-    gCurrentTick = SDL_GetTicks64();
-    gNextSnapshot = gCurrentTick;
-
     if (init()) {
-        gCurrentTick = SDL_GetTicks64();
-        gNextSnapshot = gCurrentTick;
+        g_next_snapshot = g_current_tick;
 
         SDL_Event e;
 
         while (!gQuit) {
-            gCurrentTick = SDL_GetTicks64();
+            g_current_tick = SDL_GetTicks64();
 
-            if (gCurrentTick >= gNextSnapshot) {
-                while (gCurrentTick >= gNextSnapshot) gNextSnapshot += SNAPSHOT_TICKS;
+            if (g_current_tick >= g_next_snapshot) {
+                while (g_current_tick >= g_next_snapshot) g_next_snapshot += SNAPSHOT_TICKS;
                 snapshot(e);
             }
             
@@ -114,64 +110,64 @@ int main(int argc, char* args[]) {
 
 void render() {
     const static int SCALE = 32;
-    SDL_SetRenderDrawColor(gRenderer, 191, 191, 191, 255);
-    SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawColor(g_renderer, 191, 191, 191, 255);
+    SDL_RenderClear(g_renderer);
     switch (gState) {
     case MAIN_MENU:
         break;
     case GAME:
         // i could use a callback function for this #1
-        for (uint16_t x = 0; x != gWorld.w; x++) {
-            for (uint16_t y = 0; y != gWorld.h; y++) {
+        for (uint16_t x = 0; x != g_world.w; x++) {
+            for (uint16_t y = 0; y != g_world.h; y++) {
                 const SDL_Rect fillRect = { x * SCALE, y * SCALE, SCALE , SCALE };
-                switch (gWorld.tiles[x + (y * gWorld.w)]) {
+                switch (g_world.tiles[x + (y * g_world.w)]) {
                     case -1:
-                        SDL_SetRenderDrawColor(gRenderer, 127, 35, 76, 255);
+                        SDL_SetRenderDrawColor(g_renderer, 127, 35, 76, 255);
                         break;
                     case 69:
-                        SDL_SetRenderDrawColor(gRenderer, 69, 69, 69, 69);
+                        SDL_SetRenderDrawColor(g_renderer, 69, 69, 69, 69);
                         break;
                     default:
-                        SDL_SetRenderDrawColor(gRenderer, 42, 64, 89, 255);
+                        SDL_SetRenderDrawColor(g_renderer, 42, 64, 89, 255);
                         break;
                 }
-                SDL_RenderFillRect(gRenderer, &fillRect);
+                SDL_RenderFillRect(g_renderer, &fillRect);
             }
         }
         // render everything
         for (size_t i = 0; i != THING_LIMIT; i++) {
-            if (gThings[i] != nullptr) {
+            if (g_things[i] != nullptr) {
                 SDL_Rect objRect;
                 const static int THING_SCALE = SCALE / 4;
                 const static int HALF_THING_WIDTH = THING_SCALE / 2;
 
-                SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
-                const int32_t posX = (int32_t)(gThings[i]->pos.x * fp(SCALE)) - HALF_THING_WIDTH;
-                const int32_t posY = (int32_t)(gThings[i]->pos.y * fp(SCALE)) - HALF_THING_WIDTH;
+                SDL_SetRenderDrawColor(g_renderer, 0, 0, 255, 255);
+                const int32_t posX = (int32_t)(g_things[i]->pos.x * fp(SCALE)) - HALF_THING_WIDTH;
+                const int32_t posY = (int32_t)(g_things[i]->pos.y * fp(SCALE)) - HALF_THING_WIDTH;
                 objRect = { posX,posY, THING_SCALE , THING_SCALE };
-                SDL_RenderFillRect(gRenderer, &objRect);
+                SDL_RenderFillRect(g_renderer, &objRect);
 
-                SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
-                const int32_t prevPosX = (int32_t)(gThings[i]->prevPos.x * fp(SCALE)) - HALF_THING_WIDTH;
-                const int32_t prevPosY = (int32_t)(gThings[i]->prevPos.y * fp(SCALE)) - HALF_THING_WIDTH;
-                objRect = { prevPosX,prevPosY, THING_SCALE , THING_SCALE };
-                SDL_RenderFillRect(gRenderer, &objRect);
+                SDL_SetRenderDrawColor(g_renderer, 255, 0, 0, 255);
+                const int32_t prev_posX = (int32_t)(g_things[i]->prev_pos.x * fp(SCALE)) - HALF_THING_WIDTH;
+                const int32_t prev_posY = (int32_t)(g_things[i]->prev_pos.y * fp(SCALE)) - HALF_THING_WIDTH;
+                objRect = { prev_posX,prev_posY, THING_SCALE , THING_SCALE };
+                SDL_RenderFillRect(g_renderer, &objRect);
 
 
                 // i think theres a more efficient way to do this calculating the sub time
                 // but this is more intuitive to me
-                uint64_t subSnapshotTick = SNAPSHOT_TICKS - (gNextSnapshot - gCurrentTick);
-                fp lerp{ (fp)subSnapshotTick/(fp)SNAPSHOT_TICKS};
+                uint64_t subSnapshot_tick = SNAPSHOT_TICKS - (g_next_snapshot - g_current_tick);
+                fp lerp{ (fp)subSnapshot_tick/(fp)SNAPSHOT_TICKS};
 
-                FixedVec3D subVec = gThings[i]->pos - gThings[i]->prevPos;
+                FixedVec3D subVec = g_things[i]->pos - g_things[i]->prev_pos;
                 subVec = subVec.scale(lerp);
-                FixedVec3D interpPos = gThings[i]->prevPos + subVec;
+                FixedVec3D interpPos = g_things[i]->prev_pos + subVec;
     
-                SDL_SetRenderDrawColor(gRenderer, 0, 255, 0, 255);
+                SDL_SetRenderDrawColor(g_renderer, 0, 255, 0, 255);
                 const int32_t interpX = (int32_t)(interpPos.x * fp(SCALE)) - HALF_THING_WIDTH;
                 const int32_t interpY = (int32_t)(interpPos.y * fp(SCALE)) - HALF_THING_WIDTH;
                 objRect = { interpX,interpY, THING_SCALE , THING_SCALE };
-                SDL_RenderFillRect(gRenderer, &objRect);
+                SDL_RenderFillRect(g_renderer, &objRect);
             }
         }
         break;
@@ -184,7 +180,7 @@ void render() {
     // by mistake I kept calling the clear function earlier on
     // building up the buffer without, but without rendering it
     // causing a memory leak.
-    SDL_RenderPresent(gRenderer);
+    SDL_RenderPresent(g_renderer);
 }
 
 void set_gamestate(uint8_t s) {
@@ -195,11 +191,11 @@ void set_gamestate(uint8_t s) {
 void start_game() {
     set_gamestate(GAME);
     delete_all_things();
-    load_world(gWorld, "maps/map01.txt");
+    load_world(g_world, "maps/map01.txt");
     // i could use a callback function for this #1
-    for (uint16_t x = 0; x != gWorld.w; x++) {
-        for (uint16_t y = 0; y != gWorld.h; y++) {
-            switch (gWorld.tiles[x + (y * gWorld.w)]) {
+    for (uint16_t x = 0; x != g_world.w; x++) {
+        for (uint16_t y = 0; y != g_world.h; y++) {
+            switch (g_world.tiles[x + (y * g_world.w)]) {
             case -1:
                 break;
             case 69:
@@ -236,8 +232,8 @@ void snapshot(SDL_Event &e) {
     case GAME:
         // simulate everything
         for (size_t i = 0; i != THING_LIMIT; i++) {
-            if (gThings[i] != nullptr) {
-                switch (gThings[i]->type) {
+            if (g_things[i] != nullptr) {
+                switch (g_things[i]->type) {
                     case PLAYER:
                         if (currentKeyStates[SDL_SCANCODE_D]) {
                             wishDir.x +=1 ;
@@ -252,7 +248,7 @@ void snapshot(SDL_Event &e) {
                             wishDir.y += 1;
                         }
 
-                        gThings[i]->vel -= gThings[i]->vel.scale(FRICTION * DELTA);
+                        g_things[i]->vel -= g_things[i]->vel.scale(FRICTION * DELTA);
                         if (!wishDir.is_zero()) {
                             wishDir = wishDir.norm();
 
@@ -261,27 +257,27 @@ void snapshot(SDL_Event &e) {
                             // to squeeze out some extra performance
                             // even with my optimizations using trig functions
                             // the dot product takes far less calculations here
-                            fp currentSpeed = gThings[i]->vel.dot(wishDir);
+                            fp current_speed = g_things[i]->vel.dot(wishDir);
                             fp addSpeed = MAX_ACCEL * DELTA;
-                            if (addSpeed > MAX_SPEED - currentSpeed) {
-                                addSpeed = MAX_SPEED - currentSpeed;
+                            if (addSpeed > MAX_SPEED - current_speed) {
+                                addSpeed = MAX_SPEED - current_speed;
                             }
-                            gThings[i]->vel += wishDir.scale(addSpeed);
+                            g_things[i]->vel += wishDir.scale(addSpeed);
                         }
                         else {
                             // ill need to fix this later when accounting for vertical movement
-                            if (gThings[i]->vel.mag() <= STOP_SPEED) {
-                                gThings[i]->vel = { (fp)0 ,(fp)0 ,(fp)0 };
+                            if (g_things[i]->vel.mag() <= STOP_SPEED) {
+                                g_things[i]->vel = { (fp)0 ,(fp)0 ,(fp)0 };
                             }
                         }
                         
-                        gThings[i]->move();
+                        g_things[i]->move();
                         break;
                     default:
                         break;
                 }
-                // std::cout << gThings[i]->pos.str() << '\n';
-                // std::cout << gThings[i]->vel.mag() << '\n';
+                // std::cout << g_things[i]->pos.str() << '\n';
+                // std::cout << g_things[i]->vel.mag() << '\n';
             }
         }
         break;
@@ -304,8 +300,8 @@ bool init() {
         printf("Video subsytem initialized\n");
     }
 
-    gWindow = SDL_CreateWindow("MADCOM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, gWindowWidth, gWindowHeight, SDL_WINDOW_SHOWN);
-    if (gWindow == nullptr) {
+    g_window = SDL_CreateWindow("MADCOM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_windowWidth, g_windowHeight, SDL_WINDOW_SHOWN);
+    if (g_window == nullptr) {
         printf("Failed to create window: %s\n", SDL_GetError());
         success = false;
     }
@@ -313,8 +309,8 @@ bool init() {
         printf("Window created %s\n", SDL_GetError());
     }
 
-    gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (gWindow == nullptr) {
+    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (g_window == nullptr) {
         printf("Failed to create renderer: %s\n", SDL_GetError());
         success = false;
     }
@@ -336,18 +332,18 @@ void close() {
     printf(":? Closing\n");
 
     // already has it's own message so theres no printf here
-    destroy_world(gWorld);
+    destroy_world(g_world);
 
     // same ^
     delete_all_things();
 
     // free everything from memory
-    SDL_DestroyRenderer(gRenderer);
-    gRenderer = nullptr;
+    SDL_DestroyRenderer(g_renderer);
+    g_renderer = nullptr;
     printf("Renderer destroyed\n");
 
-    SDL_DestroyWindow(gWindow);
-    gWindow = nullptr;
+    SDL_DestroyWindow(g_window);
+    g_window = nullptr;
     printf("Window destroyed\n");
 
     // then quit SDL's subsystems

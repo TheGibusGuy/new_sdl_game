@@ -13,7 +13,7 @@
 namespace mad {
 	struct World {
 		std::uint16_t w = 0, h = 0;
-		std::size_t tileNum = 0;
+		std::size_t tile_num = 0;
 		std::int8_t* tiles = nullptr;
 	};
 
@@ -25,7 +25,7 @@ namespace mad {
 		delete[] obj.tiles;
 		obj.tiles = nullptr;
 		obj.w = 0, obj.h = 0;
-		obj.tileNum = 0;
+		obj.tile_num = 0;
 		std::printf("Destroyed world\n");
 	}
 
@@ -45,11 +45,11 @@ namespace mad {
 			std::getline(file, data); obj.h = stoi(data);
 			std::printf("World is %u by %u tiles\n", obj.w, obj.h);
 
-			obj.tileNum = obj.w * obj.h;
-			std::printf("%llu bytes of tiles total\n", obj.tileNum);
+			obj.tile_num = obj.w * obj.h;
+			std::printf("%llu bytes of tiles total\n", obj.tile_num);
 
-			obj.tiles = new int8_t[obj.tileNum];
-			for (size_t i = 0; i != obj.tileNum; i++) {
+			obj.tiles = new int8_t[obj.tile_num];
+			for (size_t i = 0; i != obj.tile_num; i++) {
 				std::getline(file, data, ','); obj.tiles[i] = std::stoi(data);
 			}
 		}
