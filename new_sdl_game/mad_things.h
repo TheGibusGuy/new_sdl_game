@@ -7,11 +7,6 @@
 #include "mad_vector.h"
 
 namespace mad {
-	const std::uint8_t TICKS_BETWEEN_SNAPSHOTS = 15;
-	const std::uint8_t THING_LIMIT = 24;
-
-	const mad::fp DELTA{ (mad::fp)TICKS_BETWEEN_SNAPSHOTS / (mad::fp)1000 };
-	mad::fp gravity {200};
 
 	bool thing_debug = true;
 
@@ -45,9 +40,9 @@ namespace mad {
 				}
 			}
 			
-			void move() {
+			void move(fp &delta_time) {
 				this->prev_pos = this->pos;
-				this->pos += this->vel.scale(DELTA);
+				this->pos += this->vel.scale(delta_time);
 			}
 
 			void render2D(SDL_Renderer* renderer, mad::fp lerp, std::uint8_t scale) {
