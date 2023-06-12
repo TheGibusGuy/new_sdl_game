@@ -53,6 +53,12 @@
     <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp">
       <Filter>Header Files\fpm</Filter>
     </ClInclude>
+    <ClInclude Include="mad_simulation.h">
+      <Filter>Header Files\mad</Filter>
+    </ClInclude>
+    <ClInclude Include="mikey_bit_flags.h">
+      <Filter>Header Files\mikey</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="maps\map01.txt">

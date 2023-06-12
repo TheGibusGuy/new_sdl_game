@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <string>
 
+#include "mad_simulation.h"
+#include "mad_input.h"
 #include "mad_things.h"
 #include "mad_vector.h"
 #include "mad_world.h"
@@ -24,73 +26,27 @@ enum GAME_STATES {
     RESULTS
 };
 
-constexpr std::uint8_t STARTING_THING_LIMIT = 24;
-
-struct StateData {
-    bool quit = false;
-
-    std::uint64_t tick_current = 0;
-    std::uint64_t tick_current_snapshot = 0;
-    std::uint64_t tick_next_snapshot = 0;
-    std::uint8_t ticks_per_snapshot = 15;
-    mad::fp delta_time = (mad::fp)ticks_per_snapshot / (mad::fp)1000;
-
-    std::int8_t game_state = MAIN_MENU;
-    mad::World world;
-    std::uint8_t thing_limit = STARTING_THING_LIMIT;
-    mad::Thing* things[STARTING_THING_LIMIT] = {};
-
-};
-
-// this a wrapper function for the Thing classes' constructor
-// it checks for free space before adding an item
-int16_t create_thing(StateData& state_data, int16_t t, mad::FixedVec3D spawn_pos) {
-    std::printf("\tCreating thing\n");
-    for (std::uint16_t i = 0; i != state_data.thing_limit; i++) {
-        if (state_data.things[i] == nullptr) {
-            state_data.things[i] = new mad::Thing(t, spawn_pos);
-            return i;
-        }
-    }
-    std::printf("\tCould not create thing! No space!");
-    return -1;
-}
-
-void delete_thing(StateData& state_data, std::size_t i) {
-    if (state_data.things[i] == nullptr) {
-        std::printf("\tNothing here to delete - ");
-    }
-    else {
-        std::printf("\tDeleting thing - ");
-        delete state_data.things[i];
-    }
-    std::printf("Setting pointer to nullptr\n");
-    state_data.things[i] = nullptr;
-}
-
-void delete_all_things(StateData& state_data) {
-    std::printf("Deleting all things:\n");
-    for (std::size_t i = 0; i != state_data.thing_limit; i++) {
-        delete_thing(state_data, i);
-    }
-    std::printf("All things deleted and pointers set to nullptr\n");
-}
-
 // overloaded zone
+/*
 void snapshot(SDL_Event &e, StateData &state_data);
 void render(SDL_Renderer* &renderer, StateData &state_data);
+*/
 bool init(SDL_Window* &window, SDL_Renderer* &renderer);
-void close(SDL_Window* &window, SDL_Renderer* &renderer, StateData& state_data);
+void close(SDL_Window* &window, SDL_Renderer* &renderer, mad::Simulation& sim);
 
 int main(int argc, char* args[]) {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
 
-    StateData state_data;
+    std::int8_t game_state = MAIN_MENU;
+    mad::Simulation sim;
 
     mikey::ascii_signature();
 
+
     if (init(window,renderer)) {
+        sim.advance_time( SDL_GetTicks64() );
+        /*
         state_data.tick_next_snapshot = state_data.tick_current;
 
         SDL_Event e;
@@ -108,11 +64,14 @@ int main(int argc, char* args[]) {
             
             render(renderer,state_data);
         }
+        */
     }
-    close(window,renderer,state_data);
+    close(window,renderer,sim);
 
     return 0;
 }
+
+/*
 
 void render(SDL_Renderer* &renderer, StateData &state_data) {
     const static std::uint8_t SCALE = 32;
@@ -252,6 +211,8 @@ void snapshot(SDL_Event &e, StateData &state_data) {
     }
 }
 
+*/
+
 bool init(SDL_Window* &window, SDL_Renderer* &renderer) {
     bool success = true;
     std::printf(":? Initializing\n");
@@ -292,14 +253,14 @@ bool init(SDL_Window* &window, SDL_Renderer* &renderer) {
     return success;
 }
 
-void close(SDL_Window* &window, SDL_Renderer* &renderer, StateData& state_data) {
+void close(SDL_Window* &window, SDL_Renderer* &renderer, mad::Simulation& sim) {
     std::printf(":? Closing\n");
 
     // already has it's own message so theres no printf here
-    destroy_world(state_data.world);
+    // destroy_world(state_data.world);
 
     // same ^
-    delete_all_things(state_data);
+    // delete_all_things(state_data);
 
     // free everything from memory
     SDL_DestroyRenderer(renderer);
