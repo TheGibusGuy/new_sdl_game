@@ -11,15 +11,17 @@ namespace mad {
 
 	bool thing_debug = true;
 
-	enum THING_TYPES {
-		PLAYER,
-		ENEMY
+	enum THING_TYPES : std::uint8_t {
+		PLAYER_THING,
+		ENEMY_THING,
 	};
 
-	enum THING_FLAGS {
+	enum THING_FLAGS : std::uint8_t {
 		NO_THING, // haha, no thing, nothing
-		ACTIVE,
-		VISIBLE,
+		ACTIVE_THING,
+		VISIBLE_THING,
+		NO_GRAVITY_THING,
+		SOLID_THING,
 	};
 
 	class Thing {
@@ -27,6 +29,9 @@ namespace mad {
 			static constexpr std::uint8_t DEFAULT_FLAGS() {
 				std::uint8_t default_flags = 0;
 				mikey::set_bit_to_1(default_flags, NO_THING);
+				mikey::set_bit_to_1(default_flags, ACTIVE_THING);
+				mikey::set_bit_to_1(default_flags, VISIBLE_THING);
+				mikey::set_bit_to_1(default_flags, SOLID_THING);
 				return default_flags;
 			}		
 		public:
@@ -49,7 +54,7 @@ namespace mad {
 			void set_values (int16_t type, mad::FixedVec3D spawnPos) {
 				this->type = type;
 				switch (type) {
-					case PLAYER:
+					case PLAYER_THING:
 						this->dim = { (mad::fp)1,(mad::fp)1,(mad::fp)1 };
 						this->pos = spawnPos;
 						this->prev_pos = spawnPos;

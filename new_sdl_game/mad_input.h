@@ -4,14 +4,82 @@
 #include <cstdint>
 #include <SDL.h>
 
+#include "mikey_bit_flags.h"
+
 namespace mad {
+	enum KEYBOARD_LAYOUTS : std::uint8_t {
+		QWERTY_LAYOUT,
+		DVORAK_LAYOUT,
+	};
+
 	class Action {
-		SDL_Keycode bind;
-		SDL_Keycode alt_bind;
-		std::uint8_t flags;
-		// first bit checks if it's binded
-		// second bit checks if the alt is binded
-		// third flag check if the key is being held
+		private:
+			static std::uint8_t keyboard_layout;
+			// cannot be initialized in here
+			// if it were it would be propagated to all source files
+			// it can only be set once everything is linked
+			// so that a concensus on the static variable
+
+			// I could use bit flags for effieciecy
+			// but I don't think it's too important in this case
+			bool binded = false;
+			SDL_Scancode bind;
+			bool alt_binded = false;
+			SDL_Scancode alt_bind;
+
+			bool pressed = false;
+			bool held = false;
+			bool released = false;
+		public:
+			void set_bind(SDL_Scancode new_bind) {
+				this->bind = new_bind;
+				this->binded = true;
+			}
+			void remove_bind() {
+				this->binded = false;
+			}
+			void set_alt_bind(SDL_Scancode new_alt_bind) {
+				this->alt_bind = new_alt_bind;
+				this->alt_binded = true;
+			}
+			void remove_alt_bind() {
+				this->alt_binded = false;
+			}
+			void read_key_states(const std::uint8_t*& current_key_states) {
+				if ( (this->binded && current_key_states[this->bind]) || (this->alt_binded && current_key_states[this->alt_bind]) ) {
+
+					if (!this->held) {
+						this->pressed = true;
+					}
+					else {
+						this->pressed = false;
+					}
+
+					this->held = true;
+				} else {
+
+					if (this->held) {
+						this->released = true;
+					}
+					else {
+						this->released = false;
+					}
+
+					this->held = false;
+				}
+			}
+
+			bool was_pressed() {
+				return this->pressed;
+			}
+
+			bool is_held() {
+				return this->held;
+			}
+
+			bool was_released() {
+				return this->released;
+			}
 	};
 }
 

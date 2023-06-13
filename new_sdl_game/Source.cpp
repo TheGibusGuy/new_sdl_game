@@ -41,43 +41,49 @@ int main(int argc, char* args[]) {
     std::int8_t game_state = MAIN_MENU;
     mad::Simulation sim;
 
+    bool quit = false;
+
     mikey::ascii_signature();
 
-
     if (init(window,renderer)) {
-        sim.advance_time( SDL_GetTicks64() );
-        /*
-        state_data.tick_next_snapshot = state_data.tick_current;
 
         SDL_Event e;
 
-        while (!state_data.quit) {
-            state_data.tick_current = SDL_GetTicks64();
+        mad::Action Fire;
+        Fire.set_bind(SDL_SCANCODE_SPACE);
 
-            if (state_data.tick_current >= state_data.tick_next_snapshot) {
-                state_data.tick_current_snapshot = state_data.tick_next_snapshot;
-                snapshot(e,state_data);
+        sim.set_start_tick(SDL_GetTicks64());
 
-                // schedule the next snapshot
-                while (state_data.tick_current >= state_data.tick_next_snapshot) state_data.tick_next_snapshot += state_data.ticks_per_snapshot;
+        while (!quit) {
+            while (SDL_PollEvent(&e) != 0) {
+                if (e.type == SDL_QUIT) {
+                    quit = true;
+                }
             }
+            const std::uint8_t* current_key_states = SDL_GetKeyboardState(nullptr);
+            Fire.read_key_states(current_key_states);
+            if (Fire.was_pressed()) {
+                printf("+attack\n");
+            } else if (Fire.was_released()) {
+                printf("-attack\n");
+            }
+
+            sim.advance_time( SDL_GetTicks64() );
             
-            render(renderer,state_data);
+            //render(renderer,state_data);
         }
-        */
     }
     close(window,renderer,sim);
 
     return 0;
 }
 
-/*
-
-void render(SDL_Renderer* &renderer, StateData &state_data) {
+void render(SDL_Renderer* &renderer) {
     const static std::uint8_t SCALE = 32;
     SDL_SetRenderDrawColor(renderer, 191, 191, 191, 255);
     SDL_RenderClear(renderer);
 
+    /*
     uint64_t sub_snapshot_tick = state_data.tick_current - state_data.tick_current_snapshot;
     mad::fp lerp{ (mad::fp)sub_snapshot_tick / (mad::fp)state_data.ticks_per_snapshot };
 
@@ -100,12 +106,15 @@ void render(SDL_Renderer* &renderer, StateData &state_data) {
     default:
         std::printf("Invalid gamestate! Can't render!\n");
     }
+    */
 
     // by mistake I kept calling the clear function earlier on
     // building up the buffer without, but without rendering it
     // causing a memory leak.
     SDL_RenderPresent(renderer);
 }
+
+/*
 
 void set_gamestate(StateData &state_data, std::uint8_t s) {
     std::printf("Changing Gamestate to: %i\n", s);
@@ -120,7 +129,7 @@ void start_game(StateData &state_data) {
     for (std::uint16_t x = 0; x != state_data.world.w; x++) {
         for (std::uint16_t y = 0; y != state_data.world.h; y++) {
             switch (state_data.world.tiles[x + (y * state_data.world.w)]) {
-            case -1:
+            case -1:                                                                                                      
                 break;
             case 69:
                 create_thing(state_data, mad::PLAYER, { (mad::fp)x + (mad::fp)0.5,(mad::fp)y + (mad::fp)0.5,(mad::fp)0});
@@ -132,6 +141,9 @@ void start_game(StateData &state_data) {
     }
 }
 
+*/
+
+/*
 void snapshot(SDL_Event &e, StateData &state_data) {
     while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {

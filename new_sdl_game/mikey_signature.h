@@ -6,7 +6,7 @@
 #include <sstream>
 
 namespace mikey {
-    void ascii_signature() {
+    std::string ascii_signature() {
         std::stringstream signature;
         signature << "oooooooooooooooooodddddddddddddddddddddooooooooo\n";
         signature << "oooooooooooooooooodddddddddddooooooooooooooooooo\n";
@@ -33,7 +33,7 @@ namespace mikey {
         signature << "ooooooooooooo,   .,:clolllllccc:cooooooooooooooo\n";
         signature << "ooooooooooool.              .:odoooooooooooooooo\n";
         signature << "https://www.ascii-art-generator.org\n";
-        std::printf("%s", signature.str().c_str());
+        return signature.str();
     }
 }
 
