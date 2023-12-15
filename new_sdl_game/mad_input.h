@@ -31,21 +31,21 @@ namespace mad {
 			bool held = false;
 			bool released = false;
 		public:
-			void set_bind(SDL_Scancode new_bind) {
+			void setBind(SDL_Scancode new_bind) {
 				this->bind = new_bind;
 				this->binded = true;
 			}
-			void remove_bind() {
+			void removeBind() {
 				this->binded = false;
 			}
-			void set_alt_bind(SDL_Scancode new_alt_bind) {
+			void setAltBind(SDL_Scancode new_alt_bind) {
 				this->alt_bind = new_alt_bind;
 				this->alt_binded = true;
 			}
-			void remove_alt_bind() {
+			void removeAltBind() {
 				this->alt_binded = false;
 			}
-			void read_key_states(const std::uint8_t*& current_key_states) {
+			void readKeyStates(const std::uint8_t*& current_key_states) {
 				if ( (this->binded && current_key_states[this->bind]) || (this->alt_binded && current_key_states[this->alt_bind]) ) {
 
 					if (!this->held) {
@@ -69,15 +69,15 @@ namespace mad {
 				}
 			}
 
-			bool was_pressed() {
+			bool wasPressed() {
 				return this->pressed;
 			}
 
-			bool is_held() {
+			bool isHeld() {
 				return this->held;
 			}
 
-			bool was_released() {
+			bool wasReleased() {
 				return this->released;
 			}
 	};

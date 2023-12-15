@@ -59,6 +59,9 @@
     <ClInclude Include="mikey_bit_flags.h">
       <Filter>Header Files\mikey</Filter>
     </ClInclude>
+    <ClInclude Include="mikey_rng.h">
+      <Filter>Header Files\mikey</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="maps\map01.txt">

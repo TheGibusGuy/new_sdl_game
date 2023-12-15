@@ -164,6 +164,7 @@
     <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\fixed.hpp" />
     <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\ios.hpp" />
     <ClInclude Include="..\..\..\..\..\..\..\vclib\fpm-1.1.0\include\fpm\math.hpp" />
+    <ClInclude Include="mikey_rng.h" />
     <ClInclude Include="mikey_bit_flags.h" />
     <ClInclude Include="mad_simulation.h" />
     <ClInclude Include="mad_input.h" />

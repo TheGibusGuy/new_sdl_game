@@ -6,32 +6,29 @@
 #include <string>
 #include <sstream>
 
-#include <fpm/fixed.hpp>
-#include <fpm/ios.hpp>
-#include <fpm/math.hpp>
+#include "fpm/fixed.hpp"
+#include "fpm/ios.hpp"
+#include "fpm/math.hpp"
 
 namespace mad {
-    // it seeems this using declaration has to go after all the include directives
-    using fp = fpm::fixed_16_16;
-
     template <typename T>
-    class Vector3D {
+    class FixedVector3 {
         public:
             T x;
             T y;
             T z;
 
-            Vector3D(T X, T Y, T Z) {
+            FixedVector3(T X, T Y, T Z) {
                 x = X;
                 y = Y;
                 z = Z;
             }
 
             // addition
-            inline Vector3D operator + (const Vector3D& obj) {
+            inline FixedVector3 operator + (const FixedVector3& obj) {
                 return { this->x + obj.x, this->y + obj.y, this->z + obj.z};
             }
-            inline Vector3D& operator += (const Vector3D& obj) {
+            inline FixedVector3& operator += (const FixedVector3& obj) {
                 this->x += obj.x;
                 this->y += obj.y;
                 this->z += obj.z;
@@ -39,55 +36,39 @@ namespace mad {
             }
 
             // subtraction
-            inline Vector3D operator - (const Vector3D& obj) {
+            inline FixedVector3 operator - (const FixedVector3& obj) {
                 return { this->x - obj.x, this->y - obj.y, this->z - obj.z };
             }
-            inline Vector3D& operator -= (const Vector3D& obj) {
+            inline FixedVector3& operator -= (const FixedVector3& obj) {
                 this->x -= obj.x;
                 this->y -= obj.y;
                 this->z -= obj.z;
                 return *this;
             }
 
-            // multiplication
-            inline Vector3D operator * (const Vector3D & obj) {
-                return { this->x * obj.x, this->y * obj.y, this->z * obj.z };
-            }
-            inline Vector3D& operator *= (const Vector3D& obj) {
-                this->x *= obj.x;
-                this->y *= obj.y;
-                this->z *= obj.z;
-                return *this;
-            }
-
-            // division
-            inline Vector3D operator / (const Vector3D& obj) {
-                return { this->x / obj.x, this->y / obj.y, this->z / obj.z };
-            }
-            inline Vector3D& operator /= (const Vector3D& obj) {
-                this->x /= obj.x;
-                this->y /= obj.y;
-                this->z /= obj.z;
-                return *this;
-            }
-
             // scaling
-            Vector3D scale(fp scalar) {
+            inline FixedVector3 operator * (T scalar) {
                 return { this->x * scalar, this->y * scalar, this->z * scalar };
+            }
+            inline FixedVector3& operator *= (T scalar) {
+                this->x *= scalar;
+                this->y *= scalar;
+                this->z *= scalar;
+                return *this;
             }
 
             // check if zero
-            bool is_zero() {
-                if ((this->x == (fp)0) && (this->y == (fp)0) && (this->z == (fp)0)) return true;
+            inline bool is_zero() {
+                if ((this->x == (T)0) && (this->y == (T)0) && (this->z == (T)0)) return true;
                 return false;
             }
 
             // magnitude
-            T mag() {
+            inline T mag() {
                 // is important that i put the abs in the right spots here
                 // this was breaking earlier since I didn't
                 T thetaA;
-                if (this->x == fp(0)) {
+                if (this->x == T(0)) {
                     thetaA = T::half_pi();
                 }
                 else {
@@ -96,7 +77,7 @@ namespace mad {
                 T lengthA{ fpm::abs((this->x * fpm::cos(thetaA))) + fpm::abs((this->y * fpm::sin(thetaA))) };
 
                 T thetaB;
-                if (lengthA == fp(0)) {
+                if (lengthA == T(0)) {
                     thetaB = T::half_pi();
                 }
                 else {
@@ -108,13 +89,13 @@ namespace mad {
             }
 
             // normalize
-            Vector3D norm() {
+            inline FixedVector3 norm() {
                 T magnitude{ this->mag() };
                 return { (this->x) / magnitude, (this->y) / magnitude, (this->z) / magnitude };
             }
 
             // dot product
-            T dot(const Vector3D& obj) {
+            inline T dot(const FixedVector3& obj) {
                 return (this->x * obj.x) + (this->y * obj.y) + (this->z * obj.z);
             }
 
@@ -125,9 +106,6 @@ namespace mad {
                 return sstream.str();
             }
     };
-
-    // it seeems these using declarations have to go after all the include directives
-    using FixedVec3D = Vector3D<fp>;
 }
 
 #endif
